@@ -7,11 +7,7 @@ const CatalogueSchema = new mongoose.Schema({
     products : [
         {
             name : "String",
-            price : "Number",
-            id : {
-                type: mongoose.Schema.ObjectId,
-                auto: true
-            }
+            price : "Number"
         }
     ]
 })

@@ -30,6 +30,7 @@ router.route("/login").post(async (req, res) => {
             })
             return res.json({
                 token: jwt.sign({
+                    id: user._id,
                     username: user.username,
                     userType: user.userType
                 }, process.env.JWT_SECRET)
