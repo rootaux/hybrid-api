@@ -20,10 +20,13 @@ router.route("/seller-catalog/:seller_id").get(async (req, res) => {
 })
 
 router.route("/create-order/:seller_id").post(auth, async (req, res) => {
-    var buyerId = req.user.id
-    var sellerId = req.params.seller_id
-    var itemsToBuy = req.body.products
     try {
+        if (req.user.userType == "seller") {
+            throw new Error("Only buyers can use this service.")
+        }
+        var buyerId = req.user.id
+        var sellerId = req.params.seller_id
+        var itemsToBuy = req.body.products
         const order = await BuyerService.makeOrder({ itemsToBuy, sellerId, buyerId });
         return res.json({
             message: "Order placed successfully!",

@@ -21,18 +21,20 @@ const makeOrder = async ({itemsToBuy, sellerId, buyerId}) => {
     var catalogueProducts = await Catalogue.find({
         sellerId: sellerId
     }).select("products -_id")
-    catalogueProducts =  catalogueProducts[0].products
     if(catalogueProducts.length == 0){
         throw new Error("Seller does not have any products!")
     }
+    catalogueProducts =  catalogueProducts[0].products
     var totalPrice = 0;
     var buyItems = []
     var intr = itemsToBuy.filter(({ name : idx1 }) => catalogueProducts.some(({name: idx2, price: price, _id: itemId}) => {
         if(idx1 === idx2){
             totalPrice += price
-            buyItems.push(itemId.toJSON())
+            itemId = itemId.toString()
+            buyItems.push({productId: itemId, name: idx2, price})
         }
     }))
+    console.log(buyItems)
     const order = await new Order({
         buyerId,
         sellerId,

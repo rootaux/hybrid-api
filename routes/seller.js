@@ -6,8 +6,11 @@ const jwt = require('jsonwebtoken');
 
 router.route("/create-catalog").post(auth, async (req, res) => {
     try {
+        if( req.user.userType == "buyer"){
+            throw new Error("Only sellers can use this service.")
+        }
         const { products } = req.body;
-        if( products.length == 0 ){
+        if (products.length == 0) {
             throw new Error("Empty product list!")
         }
         const sellerId = req.user.id
@@ -25,8 +28,23 @@ router.route("/create-catalog").post(auth, async (req, res) => {
     }
 })
 
-router.route("/orders").get(auth, async(req, res) => {
-    //TODO
+router.route("/orders").get(auth, async (req, res) => {
+    try {
+        if( req.user.userType == "buyer"){
+            throw new Error("Only sellers can use this service.")
+        }
+        const sellerId = req.user.id
+        const ordersList = await SellerService.getOrders({
+            sellerId
+        })
+        return res.json({
+            orders: ordersList
+        })
+    } catch (err) {
+        return res.status(err.status || 500).json({
+            message: err.message
+        })
+    }
 })
 
 module.exports = router
