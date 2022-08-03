@@ -30,6 +30,9 @@ router.route("/register").post(async (req, res) => {
 router.route("/login").post(async (req, res) => {
     try {
         const { username, password } = req.body
+        if(!password || !username){
+            throw new Error("username and password cannot be empty")
+        }
         const user = await UserService.getUser({
             username, password
         })
