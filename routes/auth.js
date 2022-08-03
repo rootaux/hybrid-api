@@ -6,6 +6,12 @@ const jwt = require('jsonwebtoken');
 router.route("/register").post(async (req, res) => {
     try {
         const { username, password, userType } = req.body;
+        if(userType !== "seller" && userType !== "buyer"){
+            throw new Error("userType can only be buyer or seller.")
+        }
+        if(!password || !username){
+            throw new Error("username and password cannot be empty")
+        }
         const user = await UserService.saveUser({
             username,
             password,
