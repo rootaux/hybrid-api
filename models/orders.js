@@ -9,9 +9,7 @@ const OrderSchema = new mongoose.Schema({
     },
     products: [
         {
-            id,
-            name: " String",
-            price: "Number"
+            type: mongoose.Schema.ObjectId, ref: 'catalogue.products'
         }
     ],
     orderTotal : "Number"

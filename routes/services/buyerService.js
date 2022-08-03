@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
 const User = require("../../models/users")
 const Catalogue = require("../../models/catalogue")
+const Order = require("../../models/orders")
 
 const getSellers = async () => {
     const listOfSellers = await User.find({
@@ -16,6 +17,32 @@ const getProducts = async (sellerId) => {
     return listOfProducts
 }
 
+const makeOrder = async ({itemsToBuy, sellerId, buyerId}) => {
+    var catalogueProducts = await Catalogue.find({
+        sellerId: sellerId
+    }).select("products -_id")
+    catalogueProducts =  catalogueProducts[0].products
+    if(catalogueProducts.length == 0){
+        throw new Error("Seller does not have any products!")
+    }
+    var totalPrice = 0;
+    var buyItems = []
+    var intr = itemsToBuy.filter(({ name : idx1 }) => catalogueProducts.some(({name: idx2, price: price, _id: itemId}) => {
+        if(idx1 === idx2){
+            totalPrice += price
+            buyItems.push(itemId.toJSON())
+        }
+    }))
+    const order = await new Order({
+        buyerId,
+        sellerId,
+        products: buyItems,
+        orderTotal: totalPrice
+    }).save()
+    return order
+
+}
 
 module.exports.getSellers = getSellers
 module.exports.getProducts = getProducts
+module.exports.makeOrder = makeOrder
