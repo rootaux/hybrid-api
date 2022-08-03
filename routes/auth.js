@@ -22,24 +22,22 @@ router.route("/register").post(async (req, res) => {
 })
 
 router.route("/login").post(async (req, res) => {
-    {
-        try {
-            const { username, password } = req.body
-            const user = await UserService.getUser({
-                username, password
-            })
-            return res.json({
-                token: jwt.sign({
-                    id: user._id,
-                    username: user.username,
-                    userType: user.userType
-                }, process.env.JWT_SECRET)
-            })
-        } catch (err) {
-            return res.status(err.status || 500).json({
-                message: err.message
-            })
-        }
+    try {
+        const { username, password } = req.body
+        const user = await UserService.getUser({
+            username, password
+        })
+        return res.json({
+            token: jwt.sign({
+                id: user._id,
+                username: user.username,
+                userType: user.userType
+            }, process.env.JWT_SECRET)
+        })
+    } catch (err) {
+        return res.status(err.status || 500).json({
+            message: err.message
+        })
     }
 })
 
