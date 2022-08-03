@@ -1,16 +1,15 @@
 const mongoose = require("mongoose")
 const User = require("../../models/users")
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const saveUser = async ({ username, password, userType }) => {
-    try {
-        const user = await new User({
-            username,
-            password,
-            userType
-        }).save()
-    } catch (err) {
-        throw new Error("Username already exists!")
-    }
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+    const user = await new User({
+        username,
+        password: hashedPassword,
+        userType
+    }).save()
     return user
 }
 
@@ -18,10 +17,12 @@ const getUser = async ({ username, password }) => {
     const user = await User.findOne({
         username: username
     })
-    if (user.password != password) {
+    const res = await bcrypt.compare(password, user.password)
+    if(res){
+        return user
+    } else {
         throw new Error("Invalid password")
     }
-    return user
 }
 
 module.exports.saveUser = saveUser
